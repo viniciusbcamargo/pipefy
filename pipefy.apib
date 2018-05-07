@@ -1,0 +1,716 @@
+FORMAT: 1A
+HOST: https://app.pipefy.com
+
+
+# Pipefy API
+
+This is Pipefy's API documentation. Here you will find the guidelines for getting started with the API.
+
+# GraphQL
+
+GraphQL is a query language for APIs created by Facebook in 2012.
+
+**Refs**:
+* [facebook.github.io/graphql](http://facebook.github.io/graphql/)
+* [graphql.org](http://graphql.org/)
+
+Features:
+* Send a GraphQL query to the API and get exactly what you need, nothing more and nothing less. GraphQL queries always return predictable results. 
+* GraphQL queries access not just the properties of one resource but also smoothly follow references between them. While typical REST APIs require loading from multiple URLs, GraphQL APIs get all the data your app needs in a single request.
+
+# Authentication (OAuth / JWT)
+
+Most requests will require the OAuth Token, that must be sent in the request header.
+
+The **personal access token** can be found at the **User Settings** page in [Pipefy](https://app.pipefy.com/tokens)
+
+|    HTTP Header    |              Header Value             |
+|-------------------|---------------------------------------|
+| **Content-Type**  | _application/json_                    |
+| **Authorization** | _Bearer <your_personal_access_token>_ |
+
+**Refs**:
+* [OAuth 2](https://oauth.net/2/)
+* [JWT](https://jwt.io/introduction/)
+
+# Other APIs
+
+- [Database API](http://docs.pipefydatabase.apiary.io)
+- [Pipe API](http://docs.pipefypipe.apiary.io)
+
+# Explore Pipefy's API with our IDE
+After authenticating to [Pipefy](https://app.pipefy.com/), you can write, validate and test our API through the Integrated Development Environment:
+
+[app.pipefy.com/graphiql](https://app.pipefy.com/graphiql)
+
+## Me [/queries{?me}]
+
+Get information about yourself.
+
+**Request Body**
+
+```
+{
+  me {
+    id
+    name
+    username
+    email
+    avatarUrl
+    created_at
+    locale
+    timeZone
+  }
+}
+```
+
+### Get Me [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            {
+                "query": "{ me { id name username email avatar_url created_at locale time_zone } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "me": {
+                  "id": "68310",
+                  "name": "Claudio Furini Jr.",
+                  "username": "claudio.furini",
+                  "email": "claudio.furini@pipefy.com",
+                  "avatarUrl": "https://pipefy-production.s3-sa-east-1.amazonaws.com/avatar/store/user/68310/avatar/small-4b39bc357029daaba28f0691b28e96a5.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJ6QQUS4NUNAOO6IA%2F20170821%2Fsa-east-1%2Fs3%2Faws4_request&X-Amz-Date=20170821T004712Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=31d200c15d62b74d27559a2ccb90398eaf404f3d92e4bed79ab1efa3cb17bd6f",
+                  "created_at": "2017-02-06 10:49:01 -0200",
+                  "locale": "pt-BR",
+                  "timeZone": "America/Sao_Paulo"
+                }
+              }
+            }
+
+## List organizations [/queries{?organizations}]
+
+Get a list of organizations by their identifiers.
+
+**Request Body**
+```
+{
+  organizations(ids: [65386, 67595]) {
+    name
+    created_at
+    members {
+      user {
+        id
+        name
+      }
+      role_name
+    }
+    only_admin_can_create_pipes
+    only_admin_can_invite_users
+    pipes(include_publics: true) {
+      id
+      name
+    }
+    tables {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+```
+
+### organization(ids: [organization_ids]) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            {
+                "query": "{ organizations(ids: [65386, 67595]) { name created_at members { user { id name } role_name } only_admin_can_create_pipes only_admin_can_invite_users pipes { id name } tables { edges { node { id name } } } } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "organizations": [
+                  {
+                    "name": "Pipefy Organization 1",
+                    "created_at": "2017-06-26T16:00:42-03:00",
+                    "members": [
+                      {
+                        "user": {
+                          "id": "91670",
+                          "name": "Peter"
+                        },
+                        "role_name": "normal"
+                      },
+                      {
+                        "user": {
+                          "id": "87021",
+                          "name": "Napoleon"
+                        },
+                        "role_name": "normal"
+                      },
+                      {
+                        "user": {
+                          "id": "83956",
+                          "name": "David"
+                        },
+                        "role_name": "admin"
+                      },
+                      {
+                        "user": {
+                          "id": "68310",
+                          "name": "Claudio Furini"
+                        },
+                        "role_name": "admin"
+                      },
+                      {
+                        "user": {
+                          "id": "77303",
+                          "name": "Pedro"
+                        },
+                        "role_name": "normal"
+                      }
+                    ],
+                    "only_admin_can_create_pipes": false,
+                    "only_admin_can_invite_users": true,
+                    "pipes": [
+                      {
+                        "id": "211269",
+                        "name": "Pipe 1"
+                      },
+                      {
+                        "id": "211270",
+                        "name": "Pipe 2"
+                      },
+                      {
+                        "id": "219739",
+                        "name": "Secret Project"
+                      },
+                      {
+                        "id": "241213",
+                        "name": "General"
+                      },
+                      {
+                        "id": "243585",
+                        "name": "Simple To-do List"
+                      },
+                      {
+                        "id": "243587",
+                        "name": "Sales Pipeline"
+                      }
+                    ],
+                    "tables": {
+                      "edges": [
+                        {
+                          "node": {
+                            "id": "12I_mAHB",
+                            "name": "Companys"
+                          }
+                        },
+                        {
+                          "node": {
+                            "id": "V4MT9cgD",
+                            "name": "Table 1"
+                          }
+                        },
+                        {
+                          "node": {
+                            "id": "InQQ7HK6",
+                            "name": "Cities"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "Pipefy Organization 2",
+                    "created_at": "2017-07-14T15:47:18-03:00",
+                    "members": [
+                      {
+                        "user": {
+                          "id": "68310",
+                          "name": "Claudio Furini Jr."
+                        },
+                        "role_name": "admin"
+                      }
+                    ],
+                    "only_admin_can_create_pipes": false,
+                    "only_admin_can_invite_users": false,
+                    "automations": [
+                      {
+                        "id": "2068"
+                      },
+                      {
+                        "id": "2093"
+                      },
+                      {
+                        "id": "2066"
+                      }
+                    ],
+                    "pipes": [
+                      {
+                        "id": "235094",
+                        "name": "Vacation Requests"
+                      },
+                      {
+                        "id": "235095",
+                        "name": "HR"
+                      }
+                    ],
+                    "tables": {
+                      "edges": []
+                    }
+                  }
+                ]
+              }
+            }
+
+## Show organization [/queries{?organization}]
+
+Get an organization by its identifier.
+
+
+**Request Body**
+```
+{
+  organization(id: 65386) {
+    name
+    created_at
+    members {
+      user {
+        id
+        name
+      }
+      role_name
+    }
+    only_admin_can_create_pipes
+    only_admin_can_invite_users
+    pipes {
+      id
+      name
+    }
+    tables {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+```
+
+### organization(id: organization_id) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            {
+                "query": "{ organization(id: 65386){ name created_at members { user { id name } role_name } only_admin_can_create_pipes only_admin_can_invite_users pipes { id name } tables { edges { node { id name } } } } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "organization": {
+                  "name": "Pipefy Support ",
+                  "created_at": "2017-06-26T16:00:42-03:00",
+                  "members": [
+                    {
+                      "user": {
+                        "id": "77303",
+                        "name": "Peter"
+                      },
+                      "role_name": "normal"
+                    },
+                    {
+                      "user": {
+                        "id": "87021",
+                        "name": "Napoleon"
+                      },
+                      "role_name": "normal"
+                    },
+                    {
+                      "user": {
+                        "id": "68310",
+                        "name": "Claudio Furini Jr."
+                      },
+                      "role_name": "admin"
+                    }
+                  ],
+                  "only_admin_can_create_pipes": false,
+                  "only_admin_can_invite_users": true,
+                  "pipes": [
+                    {
+                      "id": "211269",
+                      "name": "Pipe 1"
+                    },
+                    {
+                      "id": "211270",
+                      "name": "Pipe 2"
+                    },
+                    {
+                      "id": "219739",
+                      "name": "Secret Project"
+                    },
+                    {
+                      "id": "241213",
+                      "name": "General"
+                    },
+                    {
+                      "id": "243585",
+                      "name": "Simple To-do List"
+                    },
+                    {
+                      "id": "243587",
+                      "name": "Sales Pipeline"
+                    }
+                  ],
+                  "tables": {
+                    "edges": [
+                      {
+                        "node": {
+                          "id": "12I_mAHB",
+                          "name": "Company"
+                        }
+                      },
+                      {
+                        "node": {
+                          "id": "V4MT9cgD",
+                          "name": "Table 2"
+                        }
+                      },
+                      {
+                        "node": {
+                          "id": "InQQ7HK6",
+                          "name": "Cities"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+
+## Create organization [/queries{?create_organization}]
+
+Mutation to create a organization, in case of success a query is returned.
+
+**Request Body**
+
+```
+mutation {
+  createOrganization(
+    input: {
+      industry: "technology"
+      name: "Oscorp"
+    }
+  ) {
+    organization {
+      id
+      name
+    }
+  }
+}
+```
+
+### createOrganization(input: {params}) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            {
+                "query": "mutation { createOrganization(input: {industry: \"technology\", name: \"Oscorp\" }) { organization{ id, name } } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "createOrganization": {
+                  "organization": {
+                    "id": "73659",
+                    "name": "Oscorp"
+                  }
+                }
+              }
+            }
+
+## Update organization [/queries{?update_organization}]
+
+Mutation to update a organization, in case of success a query is returned.
+
+**Request Body**
+```
+mutation {
+  updateOrganization(
+    input: {
+      id: 73659
+      name: "Capsule Corp."
+      only_admin_can_invite_users: true
+      only_admin_can_create_pipes: false
+      force_omniauth_to_normal_users: true
+    }
+  ) {
+    organization {
+      id
+      name
+    }
+  }
+}
+```
+
+### updateOrganization(input: {params}) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            {
+                "query": "mutation{ updateOrganization(input: {id: 73659 name: \"Capsule Corp.\" only_admin_can_invite_users: true only_admin_can_create_pipes: false force_omniauth_to_normal_users: true }) { organization { id name } } }"
+            }
+            
++ Response 200 (application/json; charset=utf-8)
+    
+    + Body
+    
+            {
+              "data": {
+                "updateOrganization": {
+                  "organization": {
+                    "id": "73659",
+                    "name": "Capsule Corp."
+                  }
+                }
+              }
+            }
+
+## Delete organization [/queries{?delete_organization}]
+
+Mutation to delete an organization, in case of success `success: true` is returned.
+
+**Request Body**
+```
+mutation {
+  deleteOrganization(input: {id: 73659}) {
+    success
+  }
+}
+```
+
+### deleteOrganization(input: {organization_id}) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            {
+                "query": "mutation { deleteOrganization(input: {id: 73659}) { success } }"
+            }
+            
++ Response 200 (application/json; charset=utf-8)
+    
+    + Body
+    
+            {
+              "data": {
+                "deleteOrganization": {
+                  "success": true
+                }
+              }
+            }
+
+## Create webhook [/queries{?create_webhook}]
+
+Mutation to create a webhook, in case of success a query is returned.
+
+**Request Body**
+```
+mutation{
+  createWebhook(
+    input: {
+      pipe_id: 219739
+      name: "New Webhook"
+      email: "severo.snape@gmail.com"
+      url: "www.myurl.com/queries"
+      actions: ["card.create", "card.done"]
+      headers: "{\"foo\": \"bar\"}"
+    }
+  ) {
+    webhook {
+      id
+      name
+    }
+  }
+}
+```
+
+### createWebhook(input: {params}) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            { 
+                "query": "mutation { createWebhook(input: { pipe_id: 219739 name: \"New Webhook\" email: \"severo.snape@gmail.com\" url: \"www.myurl.com/queries\" actions: [\"card.create\", \"card.done\"] headers: \"{\\\"foo\\\": \\\"bar\\\"}\" }) { webhook { id name } } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "createWebhook": {
+                  "webhook": {
+                    "id": "206",
+                    "name": "New Webhook"
+                  }
+                }
+              }
+            }
+
+## Update webhook [/queries{?update_webhook}]
+
+Mutation to update a webhook, in case of success a query is returned.
+
+**Request Body**
+```
+mutation{
+  updateWebhook(
+    input: {
+      id: 206
+      email: "newemail@pipefy.com"
+      actions: ["card.create", "card.move"]
+    }
+  ) {
+    webhook {
+      id
+      email
+      actions
+    }
+  }
+}
+```
+
+### updateWebhook(input: {params}) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            { 
+                "query": "mutation { updateWebhook(input: { id: 206 email: \"newemail@pipefy.com\" actions: [\"card.create\", \"card.move\"]}) { webhook { id email actions } } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "updateWebhook": {
+                  "webhook": {
+                    "id": "206",
+                    "email": "newemail@pipefy.com",
+                    "actions": [
+                      "card.create",
+                      "card.move"
+                    ]
+                  }
+                }
+              }
+            }
+
+## Delete webhook [/queries{?delete_webhook}]
+
+Mutation to delete a webhook, in case of success `success: true` is returned.
+
+**Request Body**
+```
+mutation{
+  deleteWebhook(input:{id: 206}) {
+    success
+  }
+}
+```
+
+### deleteWebhook(input: {webhook_id}) [POST]
+
++ Request (application/json)
+
+    + Headers
+
+            Authorization: Bearer your_personal_access_token
+
+    + Body
+
+            { 
+                "query": "mutation { deleteWebhook(input: { id: 206 }) { success } }"
+            }
+
++ Response 200 (application/json; charset=utf-8)
+
+    + Body
+
+            {
+              "data": {
+                "deleteWebhook": {
+                  "success": true
+                }
+              }
+            }
